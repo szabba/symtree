@@ -4,7 +4,10 @@
 
 package symtree
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestSymbolCallsCallbackWithRightString(t *testing.T) {
 	name := "a-symbol"
@@ -26,6 +29,7 @@ func TestNumberCallsCallbackWithRighInt(t *testing.T) {
 
 func TestSymTreesAreEqualToThemselves(t *testing.T) {
 	trees := map[string]SymTree{
+		"invalid":    SymTree{},
 		"symbol":     NewSymbol("+"),
 		"number":     NewNumber(13),
 		"emptyList":  NewList(),
@@ -36,6 +40,33 @@ func TestSymTreesAreEqualToThemselves(t *testing.T) {
 		t.Run(caseName, func(t *testing.T) {
 			assert(t.Errorf, Equal(tree, tree), "tree %v should be equal to itself", sexpr{tree})
 		})
+	}
+}
+
+func TestDifferentSymTreesAreNotEqual(t *testing.T) {
+	trees := map[string]SymTree{
+		"invalid":    SymTree{},
+		"symbol":     NewSymbol("+"),
+		"number":     NewNumber(13),
+		"emptyList":  NewList(),
+		"flatList":   NewList(NewSymbol("sin"), NewNumber(13)),
+		"nestedList": NewList(NewList()),
+	}
+	for leftName, left := range trees {
+		for rightName, right := range trees {
+
+			caseName := fmt.Sprintf("%s-%s", leftName, rightName)
+			if leftName == rightName {
+				continue
+			}
+
+			t.Run(caseName, func(t *testing.T) {
+				assert(
+					t.Errorf, !Equal(left, right),
+					"%v should not equal %v", sexpr{left}, sexpr{right},
+				)
+			})
+		}
 	}
 }
 
