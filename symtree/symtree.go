@@ -16,7 +16,7 @@ package symtree
 //
 // Call one of the If* methods to try to access the data.
 //
-// The == operator doesn't give meaningful results for SymTrees.
+// The == operator doesn't work for SymTrees.
 // Use the Equal function instead.
 type SymTree struct {
 	// A symbolic tree consists of a tag and one field for each valid shape.
@@ -102,7 +102,7 @@ func (l List) At(i int) SymTree {
 }
 
 // Equal compares two SymTrees for structural equality.
-// The == operator gives false positives for some tree pairss.
+// The == operator doesn't work on SymTrees.
 func Equal(a, b SymTree) bool {
 	eq := false
 	a.IfSymbol(func(a string) { b.IfSymbol(func(b string) { eq = a == b }) })
