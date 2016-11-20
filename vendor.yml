@@ -1,0 +1,3 @@
+vendors:
+- path: github.com/pkg/errors
+  rev: 248dadf4e9068a0b3e79f02ed0a610d935de5302
