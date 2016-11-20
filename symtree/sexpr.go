@@ -5,9 +5,134 @@
 package symtree
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"strconv"
+	"unicode"
+	"unicode/utf8"
 )
+
+// ReadSexpr reads an s-expression form of a symtree from an io.Reader.
+// It is reasonable to expect the
+func ReadSexpr(src io.RuneScanner) (SymTree, error) {
+	r := reader{src: src}
+	return r.parse()
+}
+
+type reader struct {
+	src io.RuneScanner
+	err error
+}
+
+func (r *reader) parse() (SymTree, error) {
+	r.skipWhile(unicode.IsSpace)
+	if r.peek() == '(' {
+		return r.parseList()
+	}
+	return r.parseAtom()
+}
+
+func (r *reader) parseList() (SymTree, error) {
+	r.accept()
+	elems := r.parseListElements()
+	if r.peek() != ')' {
+		r.eofNotExpected()
+	}
+	return r.resultIfNoError(NewList(elems...))
+}
+
+func (r *reader) resultIfNoError(tree SymTree) (SymTree, error) {
+	if r.err != nil {
+		return SymTree{}, r.err
+	}
+	return tree, nil
+}
+
+func (r *reader) eofNotExpected() {
+	if r.err != io.EOF {
+		return
+	}
+	r.err = io.ErrUnexpectedEOF
+}
+
+func (r *reader) parseListElements() []SymTree {
+	r.skipWhile(unicode.IsSpace)
+
+	var elems []SymTree
+	for r.err == nil && r.peek() != ')' {
+		elems = append(elems, r.parseListElem())
+	}
+	return elems
+}
+
+func (r *reader) parseListElem() SymTree {
+	elem, _ := r.parse()
+	r.skipWhile(unicode.IsSpace)
+	return elem
+}
+
+func (r *reader) parseAtom() (SymTree, error) {
+	atom := r.readWhile(isAtom)
+
+	if atom == "" {
+		return SymTree{}, r.err
+	}
+
+	if num, err := strconv.Atoi(atom); err == nil {
+		return NewNumber(num), r.err
+	}
+
+	return NewSymbol(atom), r.err
+}
+
+func isAtom(chr rune) bool {
+	return !unicode.IsSpace(chr) && chr != ')'
+}
+
+func (r *reader) readWhile(f func(rune) bool) string {
+	var buf bytes.Buffer
+	r.takeWhile(f, &buf)
+	return buf.String()
+}
+
+func (r *reader) skipWhile(f func(rune) bool) {
+	r.takeWhile(f, ioutil.Discard)
+}
+
+func (r *reader) takeWhile(f func(rune) bool, dst io.Writer) {
+	var buf [4]byte
+	for chr := r.peek(); r.err == nil && f(chr); chr = r.peek() {
+		r.accept()
+		runeLen := utf8.EncodeRune(buf[:], chr)
+		dst.Write(buf[:runeLen])
+	}
+}
+
+func (r *reader) peek() rune {
+	chr := r.read()
+	r.unread()
+	return chr
+}
+
+func (r *reader) accept() rune { return r.read() }
+
+func (r *reader) read() rune {
+	var chr rune
+	if r.err != nil {
+		return chr
+	}
+	chr, _, r.err = r.src.ReadRune()
+	return chr
+}
+
+func (r *reader) unread() {
+	if r.err != nil {
+		return
+	}
+	r.err = r.src.UnreadRune()
+}
 
 // WriteSexpr writes the s-expression form of t into dst.
 func WriteSexpr(dst io.Writer, t SymTree) (n int, err error) {
