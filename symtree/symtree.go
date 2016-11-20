@@ -104,11 +104,19 @@ func (l List) At(i int) SymTree {
 // Equal compares two SymTrees for structural equality.
 // The == operator doesn't work on SymTrees.
 func Equal(a, b SymTree) bool {
-	eq := false
-	a.IfSymbol(func(a string) { b.IfSymbol(func(b string) { eq = a == b }) })
-	a.IfNumber(func(a int) { b.IfNumber(func(b int) { eq = a == b }) })
-	a.IfList(func(a List) { b.IfList(func(b List) { eq = equalLists(a, b) }) })
-	return eq
+	if a.tag == symTreeInvalid && b.tag == symTreeInvalid {
+		return true
+	}
+	if a.tag == symTreeSymbol && b.tag == symTreeSymbol && a.symbol == b.symbol {
+		return true
+	}
+	if a.tag == symTreeNumber && b.tag == symTreeNumber && a.number == b.number {
+		return true
+	}
+	if a.tag == symTreeList && b.tag == symTreeList {
+		return equalLists(a.list, b.list)
+	}
+	return false
 }
 
 func equalLists(a, b List) bool {
