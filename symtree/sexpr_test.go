@@ -35,24 +35,24 @@ func TestReadSexpr(t *testing.T) {
 
 	cases := map[string]testcase{
 		"noInput":           {"", SymTree{}, causeEOF},
-		"oneLetterSymbol":   {"x", NewSymbol("x"), causeEOF},
-		"multiLetterSymbol": {"abba", NewSymbol("abba"), causeEOF},
-		"firstSymbol":       {"x y z", NewSymbol("x"), noError},
-		"emptyList":         {"()", NewList(), noError},
+		"oneLetterSymbol":   {"x", Sym("x"), causeEOF},
+		"multiLetterSymbol": {"abba", Sym("abba"), causeEOF},
+		"firstSymbol":       {"x y z", Sym("x"), noError},
+		"emptyList":         {"()", Lst(), noError},
 		"unmatchedList":     {"(", SymTree{}, causeUnexpectedEOF},
-		"singletonList":     {"(+)", NewList(NewSymbol("+")), noError},
-		"nestedEmptyList":   {"(())", NewList(NewList()), noError},
+		"singletonList":     {"(+)", Lst(Sym("+")), noError},
+		"nestedEmptyList":   {"(())", Lst(Lst()), noError},
 		"nestedList": {
 			"(+ x (/ y z))",
-			NewList(NewSymbol("+"), NewSymbol("x"), NewList(NewSymbol("/"), NewSymbol("y"), NewSymbol("z"))),
+			Lst(Sym("+"), Sym("x"), Lst(Sym("/"), Sym("y"), Sym("z"))),
 			noError,
 		},
-		"firstList":        {"(+) (abba u2 rem)", NewList(NewSymbol("+")), noError},
-		"digit":            {"7", NewNumber(7), causeEOF},
-		"multiDigitNumber": {"13", NewNumber(13), causeEOF},
-		"negativeNumber":   {"-9", NewNumber(-9), causeEOF},
-		"listWithNumbers":  {"(+ 13 x)", NewList(NewSymbol("+"), NewNumber(13), NewSymbol("x")), noError},
-		"initSpaceSkipped": {"   +", NewSymbol("+"), causeEOF},
+		"firstList":        {"(+) (abba u2 rem)", Lst(Sym("+")), noError},
+		"digit":            {"7", Num(7), causeEOF},
+		"multiDigitNumber": {"13", Num(13), causeEOF},
+		"negativeNumber":   {"-9", Num(-9), causeEOF},
+		"listWithNumbers":  {"(+ 13 x)", Lst(Sym("+"), Num(13), Sym("x")), noError},
+		"initSpaceSkipped": {"   +", Sym("+"), causeEOF},
 	}
 
 	for name, kase := range cases {
@@ -73,11 +73,11 @@ func TestWriteSexpr(t *testing.T) {
 	}
 	cases := map[string]testcase{
 		"invalid":    {SymTree{}, "<invalid symtree>"},
-		"symbol":     {NewSymbol("+"), "+"},
-		"number":     {NewNumber(13), "13"},
-		"emptyList":  {NewList(), "()"},
-		"flatList":   {NewList(NewSymbol("+"), NewNumber(13), NewNumber(4)), "(+ 13 4)"},
-		"nestedList": {NewList(NewList()), "(())"},
+		"symbol":     {Sym("+"), "+"},
+		"number":     {Num(13), "13"},
+		"emptyList":  {Lst(), "()"},
+		"flatList":   {Lst(Sym("+"), Num(13), Num(4)), "(+ 13 4)"},
+		"nestedList": {Lst(Lst()), "(())"},
 	}
 
 	for name, kase := range cases {

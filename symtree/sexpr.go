@@ -40,7 +40,7 @@ func (r *reader) parseList() (SymTree, error) {
 	if r.peek() != ')' {
 		r.eofNotExpected()
 	}
-	return r.resultIfNoError(NewList(elems...))
+	return r.resultIfNoError(Lst(elems...))
 }
 
 func (r *reader) resultIfNoError(tree SymTree) (SymTree, error) {
@@ -81,10 +81,10 @@ func (r *reader) parseAtom() (SymTree, error) {
 	}
 
 	if num, err := strconv.Atoi(atom); err == nil {
-		return NewNumber(num), r.err
+		return Num(num), r.err
 	}
 
-	return NewSymbol(atom), r.err
+	return Sym(atom), r.err
 }
 
 func isAtom(chr rune) bool {

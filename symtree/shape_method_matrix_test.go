@@ -36,15 +36,15 @@ func TestTreeShapeMethodMatrix(t *testing.T) {
 				t.IfInvalid(func() { *wasCalled = true })
 			},
 		}, {
-			NewSymbol("a-symbol"), "symbol", "IfSymbol", func(t SymTree, wasCalled *bool) {
+			Sym("a-symbol"), "symbol", "IfSymbol", func(t SymTree, wasCalled *bool) {
 				t.IfSymbol(func(_ string) { *wasCalled = true })
 			},
 		}, {
-			NewNumber(13), "number", "IfNumber", func(t SymTree, wasCalled *bool) {
+			Num(13), "number", "IfNumber", func(t SymTree, wasCalled *bool) {
 				t.IfNumber(func(_ int) { *wasCalled = true })
 			},
 		}, {
-			NewList(), "list", "IfList", func(t SymTree, wasCalled *bool) {
+			Lst(), "list", "IfList", func(t SymTree, wasCalled *bool) {
 				t.IfList(func(_ List) { *wasCalled = true })
 			},
 		},

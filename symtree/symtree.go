@@ -28,18 +28,18 @@ type SymTree struct {
 	list   List
 }
 
-// NewSymbol creates a SymTree that calls the callback passed to IfSymbol.
-func NewSymbol(name string) SymTree {
+// Sym creates a SymTree that calls the callback passed to IfSymbol.
+func Sym(name string) SymTree {
 	return SymTree{tag: symTreeSymbol, symbol: name}
 }
 
-// NewNumber creates a SymTree that calls the callback passed to IfNumber.
-func NewNumber(n int) SymTree {
+// Num creates a SymTree that calls the callback passed to IfNumber.
+func Num(n int) SymTree {
 	return SymTree{tag: symTreeNumber, number: n}
 }
 
-// NewList creates a SymTree that calls the callback passed to IfList.
-func NewList(elems ...SymTree) SymTree {
+// Lst creates a SymTree that calls the callback passed to IfList.
+func Lst(elems ...SymTree) SymTree {
 	l := List{elements: make([]SymTree, len(elems))}
 	copy(l.elements, elems)
 	return SymTree{tag: symTreeList, list: l}

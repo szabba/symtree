@@ -11,7 +11,7 @@ import (
 
 func TestSymbolCallsCallbackWithRightString(t *testing.T) {
 	name := "a-symbol"
-	tree := NewSymbol(name)
+	tree := Sym(name)
 
 	tree.IfSymbol(func(namePassedIn string) {
 		assert(t.Errorf, name == namePassedIn, "expected %q, got %q", name, namePassedIn)
@@ -20,7 +20,7 @@ func TestSymbolCallsCallbackWithRightString(t *testing.T) {
 
 func TestNumberCallsCallbackWithRighInt(t *testing.T) {
 	number := 13
-	tree := NewNumber(number)
+	tree := Num(number)
 
 	tree.IfNumber(func(numberPassedIn int) {
 		assert(t.Errorf, number == numberPassedIn, "expected %d, got %d", number, numberPassedIn)
@@ -30,11 +30,11 @@ func TestNumberCallsCallbackWithRighInt(t *testing.T) {
 func TestSymTreesAreEqualToThemselves(t *testing.T) {
 	trees := map[string]SymTree{
 		"invalid":    SymTree{},
-		"symbol":     NewSymbol("+"),
-		"number":     NewNumber(13),
-		"emptyList":  NewList(),
-		"flatList":   NewList(NewSymbol("sin"), NewNumber(13)),
-		"nestedList": NewList(NewList()),
+		"symbol":     Sym("+"),
+		"number":     Num(13),
+		"emptyList":  Lst(),
+		"flatList":   Lst(Sym("sin"), Num(13)),
+		"nestedList": Lst(Lst()),
 	}
 	for caseName, tree := range trees {
 		t.Run(caseName, func(t *testing.T) {
@@ -46,11 +46,11 @@ func TestSymTreesAreEqualToThemselves(t *testing.T) {
 func TestDifferentSymTreesAreNotEqual(t *testing.T) {
 	trees := map[string]SymTree{
 		"invalid":    SymTree{},
-		"symbol":     NewSymbol("+"),
-		"number":     NewNumber(13),
-		"emptyList":  NewList(),
-		"flatList":   NewList(NewSymbol("sin"), NewNumber(13)),
-		"nestedList": NewList(NewList()),
+		"symbol":     Sym("+"),
+		"number":     Num(13),
+		"emptyList":  Lst(),
+		"flatList":   Lst(Sym("sin"), Num(13)),
+		"nestedList": Lst(Lst()),
 	}
 	for leftName, left := range trees {
 		for rightName, right := range trees {
@@ -71,8 +71,8 @@ func TestDifferentSymTreesAreNotEqual(t *testing.T) {
 }
 
 func TestListLengthIsTheNumberOfElementsItWasCreatedWith(t *testing.T) {
-	args := []SymTree{NewSymbol("+"), NewNumber(13), NewSymbol("x")}
-	tree := NewList(args...)
+	args := []SymTree{Sym("+"), Num(13), Sym("x")}
+	tree := Lst(args...)
 
 	tree.IfList(func(list List) {
 		assert(
@@ -84,8 +84,8 @@ func TestListLengthIsTheNumberOfElementsItWasCreatedWith(t *testing.T) {
 }
 
 func TestListElementsAreEqualToEachOther(t *testing.T) {
-	args := []SymTree{NewSymbol("+"), NewNumber(13), NewSymbol("x")}
-	tree := NewList(args...)
+	args := []SymTree{Sym("+"), Num(13), Sym("x")}
+	tree := Lst(args...)
 
 	tree.IfList(func(list List) {
 		for i, arg := range args {
@@ -99,7 +99,7 @@ func TestListElementsAreEqualToEachOther(t *testing.T) {
 }
 
 func TestListElementOutOfRangeIsInvalid(t *testing.T) {
-	tree := NewList()
+	tree := Lst()
 
 	invalid := false
 	tree.IfList(func(list List) {
