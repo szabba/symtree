@@ -141,6 +141,13 @@ func WriteSexpr(dst io.Writer, t SymTree) (n int, err error) {
 	return w.n, w.err
 }
 
+// Format implements fmt.Formatter for SymTrees.
+func (tree SymTree) Format(f fmt.State, c rune) {
+	WriteSexpr(f, tree)
+}
+
+var _ fmt.Formatter = SymTree{}
+
 type writer struct {
 	dst io.Writer
 	n   int
