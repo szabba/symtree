@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-// Each SymTree is one of four possibl "shapes": invalid, a symbol, a number or a list.
+// Each Tree is one of four possibl "shapes": invalid, a symbol, a number or a list.
 // No If* method works the same for all shapes.
 // Naturally, we want to test each method with each shape.
 //
@@ -32,19 +32,19 @@ import (
 func TestTreeShapeMethodMatrix(t *testing.T) {
 	cases := []testCaseParts{
 		{
-			SymTree{}, "invalid", "IfInvalid", func(t SymTree, wasCalled *bool) {
+			Tree{}, "invalid", "IfInvalid", func(t Tree, wasCalled *bool) {
 				t.IfInvalid(func() { *wasCalled = true })
 			},
 		}, {
-			Sym("a-symbol"), "symbol", "IfSymbol", func(t SymTree, wasCalled *bool) {
+			Sym("a-symbol"), "symbol", "IfSymbol", func(t Tree, wasCalled *bool) {
 				t.IfSymbol(func(_ string) { *wasCalled = true })
 			},
 		}, {
-			Num(13), "number", "IfNumber", func(t SymTree, wasCalled *bool) {
+			Num(13), "number", "IfNumber", func(t Tree, wasCalled *bool) {
 				t.IfNumber(func(_ int) { *wasCalled = true })
 			},
 		}, {
-			Lst(), "list", "IfList", func(t SymTree, wasCalled *bool) {
+			Lst(), "list", "IfList", func(t Tree, wasCalled *bool) {
 				t.IfList(func(_ List) { *wasCalled = true })
 			},
 		},
@@ -63,10 +63,10 @@ type testCase struct {
 }
 
 type testCaseParts struct {
-	Tree       SymTree
+	Tree       Tree
 	ShapeName  string
 	MethodName string
-	Check      func(SymTree, *bool)
+	Check      func(Tree, *bool)
 }
 
 func (mc *testCase) Name() string {

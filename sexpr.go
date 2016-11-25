@@ -16,7 +16,7 @@ import (
 
 // ReadSexpr reads an s-expression form of a symtree from an io.Reader.
 // It is reasonable to expect the
-func ReadSexpr(src io.RuneScanner) (SymTree, error) {
+func ReadSexpr(src io.RuneScanner) (Tree, error) {
 	r := reader{src: src}
 	return r.parse()
 }
@@ -26,7 +26,7 @@ type reader struct {
 	err error
 }
 
-func (r *reader) parse() (SymTree, error) {
+func (r *reader) parse() (Tree, error) {
 	r.skipWhile(unicode.IsSpace)
 	if r.peek() == '(' {
 		return r.parseList()
@@ -34,7 +34,7 @@ func (r *reader) parse() (SymTree, error) {
 	return r.parseAtom()
 }
 
-func (r *reader) parseList() (SymTree, error) {
+func (r *reader) parseList() (Tree, error) {
 	r.accept()
 	elems := r.parseListElements()
 	if r.peek() != ')' {
@@ -43,9 +43,9 @@ func (r *reader) parseList() (SymTree, error) {
 	return r.resultIfNoError(Lst(elems...))
 }
 
-func (r *reader) resultIfNoError(tree SymTree) (SymTree, error) {
+func (r *reader) resultIfNoError(tree Tree) (Tree, error) {
 	if r.err != nil {
-		return SymTree{}, r.err
+		return Tree{}, r.err
 	}
 	return tree, nil
 }
@@ -57,27 +57,27 @@ func (r *reader) eofNotExpected() {
 	r.err = io.ErrUnexpectedEOF
 }
 
-func (r *reader) parseListElements() []SymTree {
+func (r *reader) parseListElements() []Tree {
 	r.skipWhile(unicode.IsSpace)
 
-	var elems []SymTree
+	var elems []Tree
 	for r.err == nil && r.peek() != ')' {
 		elems = append(elems, r.parseListElem())
 	}
 	return elems
 }
 
-func (r *reader) parseListElem() SymTree {
+func (r *reader) parseListElem() Tree {
 	elem, _ := r.parse()
 	r.skipWhile(unicode.IsSpace)
 	return elem
 }
 
-func (r *reader) parseAtom() (SymTree, error) {
+func (r *reader) parseAtom() (Tree, error) {
 	atom := r.readWhile(isAtom)
 
 	if atom == "" {
-		return SymTree{}, r.err
+		return Tree{}, r.err
 	}
 
 	if num, err := strconv.Atoi(atom); err == nil {
@@ -135,18 +135,18 @@ func (r *reader) unread() {
 }
 
 // WriteSexpr writes the s-expression form of t into dst.
-func WriteSexpr(dst io.Writer, t SymTree) (n int, err error) {
+func WriteSexpr(dst io.Writer, t Tree) (n int, err error) {
 	w := writer{dst: dst}
 	w.WriteTree(t)
 	return w.n, w.err
 }
 
-// Format implements fmt.Formatter for SymTrees.
-func (tree SymTree) Format(f fmt.State, c rune) {
+// Format implements fmt.Formatter for Trees.
+func (tree Tree) Format(f fmt.State, c rune) {
 	WriteSexpr(f, tree)
 }
 
-var _ fmt.Formatter = SymTree{}
+var _ fmt.Formatter = Tree{}
 
 type writer struct {
 	dst io.Writer
@@ -154,7 +154,7 @@ type writer struct {
 	err error
 }
 
-func (w *writer) WriteTree(t SymTree) {
+func (w *writer) WriteTree(t Tree) {
 	t.IfInvalid(func() { w.Write("<invalid symtree>") })
 	t.IfSymbol(func(s string) { w.Write(s) })
 	t.IfNumber(func(n int) { w.Write(n) })

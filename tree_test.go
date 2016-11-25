@@ -27,9 +27,9 @@ func TestNumberCallsCallbackWithRighInt(t *testing.T) {
 	})
 }
 
-func TestSymTreesAreEqualToThemselves(t *testing.T) {
-	trees := map[string]SymTree{
-		"invalid":    SymTree{},
+func TestTreesAreEqualToThemselves(t *testing.T) {
+	trees := map[string]Tree{
+		"invalid":    Tree{},
 		"symbol":     Sym("+"),
 		"number":     Num(13),
 		"emptyList":  Lst(),
@@ -43,9 +43,9 @@ func TestSymTreesAreEqualToThemselves(t *testing.T) {
 	}
 }
 
-func TestDifferentSymTreesAreNotEqual(t *testing.T) {
-	trees := map[string]SymTree{
-		"invalid":    SymTree{},
+func TestDifferentTreesAreNotEqual(t *testing.T) {
+	trees := map[string]Tree{
+		"invalid":    Tree{},
 		"symbol":     Sym("+"),
 		"number":     Num(13),
 		"emptyList":  Lst(),
@@ -71,7 +71,7 @@ func TestDifferentSymTreesAreNotEqual(t *testing.T) {
 }
 
 func TestListLengthIsTheNumberOfElementsItWasCreatedWith(t *testing.T) {
-	args := []SymTree{Sym("+"), Num(13), Sym("x")}
+	args := []Tree{Sym("+"), Num(13), Sym("x")}
 	tree := Lst(args...)
 
 	tree.IfList(func(list List) {
@@ -84,7 +84,7 @@ func TestListLengthIsTheNumberOfElementsItWasCreatedWith(t *testing.T) {
 }
 
 func TestListElementsAreEqualToEachOther(t *testing.T) {
-	args := []SymTree{Sym("+"), Num(13), Sym("x")}
+	args := []Tree{Sym("+"), Num(13), Sym("x")}
 	tree := Lst(args...)
 
 	tree.IfList(func(list List) {

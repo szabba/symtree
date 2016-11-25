@@ -5,20 +5,20 @@
 // Package symtree implements immutable, s-expression-like trees.
 package symtree
 
-// A SymTree is either
+// A Tree is either
 //
 //     - invalid
 //     - a symbol
 //     - a number
-//     - a list of other SymTrees
+//     - a list of other Trees
 //
-// SymTrees are immutable.
+// Trees are immutable.
 //
 // Call one of the If* methods to try to access the data.
 //
-// The == operator doesn't work for SymTrees.
+// The == operator doesn't work for Trees.
 // Use the Equal function instead.
-type SymTree struct {
+type Tree struct {
 	// A symbolic tree consists of a tag and one field for each valid shape.
 	// The tag tells us which shape the value has.
 
@@ -28,65 +28,65 @@ type SymTree struct {
 	list   List
 }
 
-// Sym creates a SymTree that calls the callback passed to IfSymbol.
-func Sym(name string) SymTree {
-	return SymTree{tag: symTreeSymbol, symbol: name}
+// Sym creates a Tree that calls the callback passed to IfSymbol.
+func Sym(name string) Tree {
+	return Tree{tag: symTreeSymbol, symbol: name}
 }
 
-// Num creates a SymTree that calls the callback passed to IfNumber.
-func Num(n int) SymTree {
-	return SymTree{tag: symTreeNumber, number: n}
+// Num creates a Tree that calls the callback passed to IfNumber.
+func Num(n int) Tree {
+	return Tree{tag: symTreeNumber, number: n}
 }
 
-// Lst creates a SymTree that calls the callback passed to IfList.
-func Lst(elems ...SymTree) SymTree {
-	l := List{elements: make([]SymTree, len(elems))}
+// Lst creates a Tree that calls the callback passed to IfList.
+func Lst(elems ...Tree) Tree {
+	l := List{elements: make([]Tree, len(elems))}
 	copy(l.elements, elems)
-	return SymTree{tag: symTreeList, list: l}
+	return Tree{tag: symTreeList, list: l}
 }
 
-// IfInvalid calls f if the receiver is not a valid SymTree.
-// There are two ways to get an invalid SymTree.
+// IfInvalid calls f if the receiver is not a valid Tree.
+// There are two ways to get an invalid Tree.
 // One is to use the zero value.
 // The other is to call List.At with an index that's out of bounds.
-func (tree SymTree) IfInvalid(f func()) {
+func (tree Tree) IfInvalid(f func()) {
 	if tree.tag != symTreeInvalid {
 		return
 	}
 	f()
 }
 
-// IfSymbol calls f if the receiver is a symbol SymTree.
+// IfSymbol calls f if the receiver is a symbol Tree.
 // The argument passed in is the symbol's string representation.
-func (tree SymTree) IfSymbol(f func(string)) {
+func (tree Tree) IfSymbol(f func(string)) {
 	if tree.tag != symTreeSymbol {
 		return
 	}
 	f(tree.symbol)
 }
 
-// IfNumber calls f if the receiver is a number SymTree.
+// IfNumber calls f if the receiver is a number Tree.
 // The argument passed in is the value of the number.
-func (tree SymTree) IfNumber(f func(int)) {
+func (tree Tree) IfNumber(f func(int)) {
 	if tree.tag != symTreeNumber {
 		return
 	}
 	f(tree.number)
 }
 
-// IfList calls f if the receiver is a list SymTree.
-// The argument passed in is the List containing all the children of the SymTree.
-func (tree SymTree) IfList(f func(List)) {
+// IfList calls f if the receiver is a list Tree.
+// The argument passed in is the List containing all the children of the Tree.
+func (tree Tree) IfList(f func(List)) {
 	if tree.tag != symTreeList {
 		return
 	}
 	f(tree.list)
 }
 
-// A List is an immutable sequence of SymTrees.
+// A List is an immutable sequence of Trees.
 type List struct {
 	len      int
-	elements []SymTree
+	elements []Tree
 }
 
 // Len returns the number of elements in the List.
@@ -94,16 +94,16 @@ func (l List) Len() int { return len(l.elements) }
 
 // At looks up the i-th element of the List.
 // If i is out of bounds, then the returned tree is invalid.
-func (l List) At(i int) SymTree {
+func (l List) At(i int) Tree {
 	if i < 0 || i >= len(l.elements) {
-		return SymTree{}
+		return Tree{}
 	}
 	return l.elements[i]
 }
 
-// Equal compares two SymTrees for structural equality.
-// The == operator doesn't work on SymTrees.
-func Equal(a, b SymTree) bool {
+// Equal compares two Trees for structural equality.
+// The == operator doesn't work on Trees.
+func Equal(a, b Tree) bool {
 	if a.tag == symTreeInvalid && b.tag == symTreeInvalid {
 		return true
 	}

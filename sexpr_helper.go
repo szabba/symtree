@@ -6,12 +6,12 @@ package symtree
 
 import "bytes"
 
-// A sexpr wraps a SymTree and adds a String method.
+// A sexpr wraps a Tree and adds a String method.
 // The output is the same as that of WriteSexpr.
-type sexpr struct{ SymTree }
+type sexpr struct{ Tree }
 
 func (s sexpr) String() string {
 	var b bytes.Buffer
-	WriteSexpr(&b, s.SymTree)
+	WriteSexpr(&b, s.Tree)
 	return b.String()
 }

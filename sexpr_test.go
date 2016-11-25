@@ -16,7 +16,7 @@ import (
 func TestReadSexpr(t *testing.T) {
 	type testcase struct {
 		input      string
-		tree       SymTree
+		tree       Tree
 		checkError func(*testing.T, error)
 	}
 	noError := func(t *testing.T, err error) {
@@ -34,12 +34,12 @@ func TestReadSexpr(t *testing.T) {
 	}
 
 	cases := map[string]testcase{
-		"noInput":           {"", SymTree{}, causeEOF},
+		"noInput":           {"", Tree{}, causeEOF},
 		"oneLetterSymbol":   {"x", Sym("x"), causeEOF},
 		"multiLetterSymbol": {"abba", Sym("abba"), causeEOF},
 		"firstSymbol":       {"x y z", Sym("x"), noError},
 		"emptyList":         {"()", Lst(), noError},
-		"unmatchedList":     {"(", SymTree{}, causeUnexpectedEOF},
+		"unmatchedList":     {"(", Tree{}, causeUnexpectedEOF},
 		"singletonList":     {"(+)", Lst(Sym("+")), noError},
 		"nestedEmptyList":   {"(())", Lst(Lst()), noError},
 		"nestedList": {
@@ -68,11 +68,11 @@ func TestReadSexpr(t *testing.T) {
 
 func TestWriteSexpr(t *testing.T) {
 	type testcase struct {
-		tree     SymTree
+		tree     Tree
 		expected string
 	}
 	cases := map[string]testcase{
-		"invalid":    {SymTree{}, "<invalid symtree>"},
+		"invalid":    {Tree{}, "<invalid symtree>"},
 		"symbol":     {Sym("+"), "+"},
 		"number":     {Num(13), "13"},
 		"emptyList":  {Lst(), "()"},
